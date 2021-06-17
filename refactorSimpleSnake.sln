@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "refactorSimpleSnake", "refactorSimpleSnake\refactorSimpleSnake.csproj", "{343B6E5E-6C0B-4209-B6FE-AE3762A0E0AA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{343B6E5E-6C0B-4209-B6FE-AE3762A0E0AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{343B6E5E-6C0B-4209-B6FE-AE3762A0E0AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{343B6E5E-6C0B-4209-B6FE-AE3762A0E0AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{343B6E5E-6C0B-4209-B6FE-AE3762A0E0AA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B204FA77-E628-4030-8CBB-DE6082644584}
+	EndGlobalSection
+EndGlobal
