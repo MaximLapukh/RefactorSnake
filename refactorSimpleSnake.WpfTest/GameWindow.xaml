@@ -14,15 +14,7 @@
         <KeyBinding Key="Left" Command="{Binding InputLeft}"/>
     </Window.InputBindings>
     <Grid>
-        
-        <ListBox>
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas></Canvas>
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-        </ListBox>
-        <Canvas x:Name="Field" Background="Black" Width="{Binding WidthWindow}" Height="{Binding HeightWindow}"/>
-        <Canvas x:Name="dynamicField" Width="{Binding WidthWindow}" Height="{Binding HeightWindow}"/>
+        <Canvas x:Name="Background" Background="Black" Width="{Binding WidthWindow}" Height="{Binding HeightWindow}"/>
+        <Canvas x:Name="DynSpace" Width="{Binding WidthWindow}" Height="{Binding HeightWindow}"/>
     </Grid>
 </Window>

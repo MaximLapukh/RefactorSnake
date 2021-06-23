@@ -18,6 +18,7 @@ namespace refactorSimpleSnake.WpfTest.ViewModels
 {
     public class GameViewModel:DependencyObject
     {
+        public const int CellSize = 10;
         public int WidthWindow
         {
             get { return (int)GetValue(WidthProperty); }
@@ -32,7 +33,7 @@ namespace refactorSimpleSnake.WpfTest.ViewModels
         }
         public static readonly DependencyProperty HeightProperty =
             DependencyProperty.Register("Height", typeof(int), typeof(GameViewModel), new PropertyMetadata(0));
-        private Canvas gameField;
+        private Canvas dynSpace;
         private Snake snake;
         public ICommand InputUp => new DelegateCommand((o) =>
         {
@@ -50,78 +51,68 @@ namespace refactorSimpleSnake.WpfTest.ViewModels
         {
             snake.direction = Direction.left;
         });
-        public GameViewModel()
-        {
-
-        }
         public GameViewModel(GameWindow window)
         {
-            HeightWindow = MainViewModel._settings._height * 10;
-            WidthWindow = MainViewModel._settings._width * 10;
-            gameField = window.dynamicField;
+            HeightWindow = MainViewModel._settings._height * CellSize;
+            WidthWindow = MainViewModel._settings._width * CellSize;
+            dynSpace = window.DynSpace;
 
             Game game = new Game(MainViewModel._settings, new FactoryWallsAround(), new EatToCreate());
             game.Update += ChangedView;
-            ViewWalls(window, game.GetStaticObjs());
-
-            game.Start();
+            foreach (var wall in InitWalls(game.GetStaticObjs()))
+            {
+                window.Background.Children.Add(wall);
+            }
+           game.Start();
            snake =  game.AddSnake(new Vector2(1, 9), 3, Direction.up);
         }
-
-        private static void ViewWalls(GameWindow window, List<GameObject> walls)
+        private IEnumerable<Rectangle> InitWalls(List<GameObject> walls)
         {
             foreach (var wall in walls)
             {
-                var viewWall = new Rectangle()
-                {
-                    Width = 10,
-                    Height = 10,
-                    Fill = Brushes.White,
-                    Stroke = Brushes.Black,
-                    StrokeThickness = 1
-                };
-                Canvas.SetLeft(viewWall, wall.position.x * 10);
-                Canvas.SetTop(viewWall, wall.position.y * 10);
-                window.Field.Children.Add(viewWall);
+                var viewWall = CreateViewObj(wall);
+                viewWall.Fill = Brushes.White;
+                yield return viewWall;
             }
         }
+        private Rectangle CreateViewObj(GameObject gObj)
+        {
+            var viewObj =  new Rectangle()
+            {
+                Width = CellSize,
+                Height = CellSize,
+                Fill = Brushes.White,
+                Stroke = Brushes.Black,
+                StrokeThickness = 1
+            };
 
+            Canvas.SetLeft(viewObj, gObj.position.x * CellSize);
+            Canvas.SetTop(viewObj, gObj.position.y * CellSize);
+            return viewObj;
+        }
         private void ChangedView(object sender, EventArgs e)
         {
             var game = sender as Game;
-            var dynObjs = game.GetDynamicObjs();
-
+            var list = game.GetDynamicObjs();
             Action action = new Action(() =>
             {
-                gameField.Children.Clear();
-
-                foreach (var gObj in dynObjs)
+                dynSpace.Children.Clear();
+                foreach (var gObj in list)
                 {
-                    var list_gObj = gObj.ToList();
-                    foreach (var item in list_gObj)
+                    var children = gObj.ToList();
+                    foreach (var child in children)
                     {
-                        var viewgObj = new Rectangle()
-                        {
-                            Width = 10,
-                            Height = 10,
-                            Fill = Brushes.White,
-                            Stroke = Brushes.Black,
-                            StrokeThickness = 0.5
-
-                        };
-                        if (item is Food)
-                        {
-                            viewgObj.Fill = Brushes.GreenYellow;
-                        }
-                        else if (item is Snake || item is Segment)
-                        {
+                        var viewgObj = CreateViewObj(child);
+                        Type type = child.GetType();
+                        //switch
+                        if (type == typeof(Food))                        
+                            viewgObj.Fill = Brushes.GreenYellow;                        
+                        else if (type == typeof(Snake))
                             viewgObj.Fill = Brushes.Red;
-                        }
+                        else if (type == typeof(Segment))
+                            viewgObj.Fill = Brushes.Orange;
 
-                        Canvas.SetLeft(viewgObj, item.position.x * 10);
-                        Canvas.SetTop(viewgObj, item.position.y * 10);
-
-                        gameField.Children.Add(viewgObj);
+                        dynSpace.Children.Add(viewgObj);
                     }
                 }
             });
