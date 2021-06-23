@@ -1,5 +1,4 @@
-﻿using refactorSimpleSnake.Core;
-using refactorSimpleSnake.FactoryFoods;
+﻿using refactorSimpleSnake.FactoryFoods;
 using refactorSimpleSnake.FactoryWalls;
 using System;
 using System.Collections.Generic;
@@ -12,15 +11,21 @@ namespace refactorSimpleSnake
     public sealed class Game:IGame
     {
         private bool IsGameOver { get; set; } = false;
-        private Dictionary<int, GameObject> staticGameObjs;
-        private List<GameObject> dynamicGameObjs;      
+        private readonly Dictionary<int, GameObject> staticGameObjs = new Dictionary<int, GameObject>();
+        private List<GameObject> dynamicGameObjs = new List<GameObject>();
+        private List<GameObject> remGameObjs = new List<GameObject>();
         private readonly GameSettings _settings;
-        private IFactoryFood _factoryFood;
+        private readonly IFactoryFood _factoryFood;
         private int countFoods=0;
+
+        public event EventHandler Update;
+
         public Game(GameSettings settings,BaseFactoryWalls factoryWalls = null,IFactoryFood factoryFood = null)
         {            
             _settings = settings;
-            _factoryFood = factoryFood;
+            if (factoryFood != null)
+                _factoryFood = factoryFood;
+            else _factoryFood = new NoneFactoryFood();
             if (factoryWalls != null)
                 staticGameObjs = factoryWalls.InitWalls(_settings);
 
@@ -28,7 +33,11 @@ namespace refactorSimpleSnake
 
         public Snake AddSnake(Vector2 start, int slong, Direction dir)
         {
-            throw new NotImplementedException();
+            var snake = new Snake(this,slong);
+            snake.direction = dir;
+            snake.position = start;
+            dynamicGameObjs.Add(snake);
+            return snake;
         }
 
         public void GameOver()
@@ -48,7 +57,7 @@ namespace refactorSimpleSnake
 
         public bool TryGetGamObj(Vector2 vec, out GameObject gameObject)
         {
-
+            var hash = vec.GetHashCode();
             if (staticGameObjs.TryGetValue(vec.GetHashCode(), out GameObject gObj))
             {
                 gameObject = gObj;
@@ -79,19 +88,24 @@ namespace refactorSimpleSnake
         {            
             reset();
             Task.Factory.StartNew(() => {
-                
-                if (IsGameOver) return; 
-                var nfoods = _factoryFood.CreateFood(this, _settings);
-                if (nfoods != null && nfoods.Count > 0)
+                while (true)
                 {
-                    dynamicGameObjs.AddRange(nfoods);
-                    countFoods += nfoods.Count;
-                }
-                foreach (var obj in dynamicGameObjs)
-                {
-                    obj.MoveTo(obj.position);
-                }
-                Task.Delay(500).Wait();
+                    if (IsGameOver) return;
+                    foreach (var obj in dynamicGameObjs)
+                    {
+                        obj.MoveTo(obj.position);
+                    }
+                    destroyRemObjs();
+                    var nfoods = _factoryFood.CreateFood(this, _settings);
+                    if (nfoods != null && nfoods.Count > 0)
+                    {
+                        dynamicGameObjs.AddRange(nfoods);
+                        countFoods += nfoods.Count;
+                    }
+                    
+                    Update?.Invoke(this, null);
+                    Task.Delay(100).Wait();
+                }               
             });
             
 
@@ -101,11 +115,21 @@ namespace refactorSimpleSnake
             countFoods = 0;
             IsGameOver = false;
         }
+        private void destroyRemObjs()
+        {
+            if(remGameObjs.Count > 0)
+            {
+                foreach (var obj in remGameObjs)
+                {
+                    dynamicGameObjs.Remove(obj);
+                }
+            }
+        }
         public void EatFood(object sender,Food food)
         {
-            if(sender is Snake)
+            if(sender is Snake && food != null)
             {
-                dynamicGameObjs.Remove(food);
+                remGameObjs.Add(food);
                 countFoods--;
             }
         }

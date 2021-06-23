@@ -10,33 +10,13 @@ namespace refactorSimpleSnake
     {
         private bool die = false;
         private Vector2 _direction;
+        private Direction _dir;//error if it not exist, when call get{}
         public Direction direction
         {
-            get { return direction; }
+            get { return _dir; }
             set {
-                switch (value)
-                {
-                    case Direction.right:
-
-                        _direction.x = 1;
-                        _direction.y = 0;
-                        break;
-
-                    case Direction.left:
-                        _direction.x = -1;
-                        _direction.y = 0;
-                        break;
-
-                    case Direction.up:
-                        _direction.x = 0;
-                        _direction.y = -1;
-                        break;
-
-                    case Direction.down:
-                        _direction.x = 0;
-                        _direction.y = 1;
-                        break;
-                }
+                _dir = value;
+                _direction = value.GetVector2();
             }
         }
         public int score { get; private set; }
@@ -69,7 +49,7 @@ namespace refactorSimpleSnake
                     if (gObj is Wall||gObj is Snake)
                     {
                         _game.GameOver();
-                        die = true;
+                        Die();
                     }
                     var food = gObj as Food;
                     if (food != null)
@@ -101,6 +81,11 @@ namespace refactorSimpleSnake
             }
             if (position == pos) res = true;
             return res;
+        }
+        public virtual void Die()
+        {
+            die = true;
+            _game.GameOver();
         }
         public int GetScore()
         {

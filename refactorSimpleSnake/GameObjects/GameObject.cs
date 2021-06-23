@@ -15,5 +15,9 @@ namespace refactorSimpleSnake
         public virtual void MoveTo(Vector2 to) { position = to; }
         public virtual List<GameObject> ToList() { return new List<GameObject>() { this }; }
         public virtual bool IsHit(Vector2 pos) { return position == pos; }
+        public sealed override int GetHashCode()
+        {
+            return position.GetHashCode();
+        }
     }
 }

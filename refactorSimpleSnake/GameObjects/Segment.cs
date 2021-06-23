@@ -28,7 +28,9 @@ namespace refactorSimpleSnake
         }
         public void RemoveLast()
         {
+            if (nextSegment == null) return;
             if (nextSegment.nextSegment == null) nextSegment = null;
+            else { nextSegment.RemoveLast(); }
         }
         public override List<GameObject> ToList()
         {

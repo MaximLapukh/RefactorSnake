@@ -1,0 +1,28 @@
+﻿<Window x:Class="refactorSimpleSnake.WpfTest.GameWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:refactorSimpleSnake.WpfTest" xmlns:vm="clr-namespace:refactorSimpleSnake.WpfTest.ViewModels"
+        mc:Ignorable="d"
+        Title="GameWindow" SizeToContent="WidthAndHeight" ResizeMode="NoResize">
+
+    <Window.InputBindings>
+        <KeyBinding Key="Up" Command="{Binding InputUp}"/>
+        <KeyBinding Key="Down" Command="{Binding InputDown}"/>
+        <KeyBinding Key="Right" Command="{Binding InputRight}"/>
+        <KeyBinding Key="Left" Command="{Binding InputLeft}"/>
+    </Window.InputBindings>
+    <Grid>
+        
+        <ListBox>
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas></Canvas>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+        </ListBox>
+        <Canvas x:Name="Field" Background="Black" Width="{Binding WidthWindow}" Height="{Binding HeightWindow}"/>
+        <Canvas x:Name="dynamicField" Width="{Binding WidthWindow}" Height="{Binding HeightWindow}"/>
+    </Grid>
+</Window>

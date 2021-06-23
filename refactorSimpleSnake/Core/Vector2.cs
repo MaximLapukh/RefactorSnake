@@ -40,7 +40,7 @@ namespace refactorSimpleSnake
         }
         public override int GetHashCode()
         {
-            string temp = x.ToString() + y.ToString();
+            string temp = 1 + Math.Abs(x).ToString() + 98 + Math.Abs(y).ToString();
             return int.Parse(temp);
         }
     }
