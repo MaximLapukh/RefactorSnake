@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:refactorSimpleSnake.WpfTest" xmlns:vm="clr-namespace:refactorSimpleSnake.WpfTest.ViewModels"
         mc:Ignorable="d"
-        Title="GameWindow" SizeToContent="WidthAndHeight" ResizeMode="NoResize">
+        Title="GameWindow" SizeToContent="WidthAndHeight" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
 
     <Window.InputBindings>
         <KeyBinding Key="Up" Command="{Binding InputUp}"/>

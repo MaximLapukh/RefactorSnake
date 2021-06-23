@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:refactorSimpleSnake.WpfTest" xmlns:viewmodels="clr-namespace:refactorSimpleSnake.WpfTest.ViewModels"
         mc:Ignorable="d"
-        Title="Main Menu" Height="{Binding Width}" Width="250">
+        Title="Main Menu" Height="500" Width="500" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style x:Key="Header" TargetType="TextBlock">
             <Setter Property="HorizontalAlignment" Value="Center"/>
