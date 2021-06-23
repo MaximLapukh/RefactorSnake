@@ -41,8 +41,10 @@ namespace refactorSimpleSnake
         {
             if (die) return;
 
-            var nextpos = position + _direction;
-            if(_game.TryGetGamObj(nextpos, out GameObject gObj))
+            var nextpos = CorrectionPos(position + _direction);
+            //nextpos.x % _game.GetSettings()._width;
+
+            if (_game.TryGetGamObj(nextpos, out GameObject gObj))
             {
                 if(gObj != null)
                 {
@@ -71,6 +73,18 @@ namespace refactorSimpleSnake
             }
             else stomach--;
         }
+        private Vector2 CorrectionPos(Vector2 pos) {
+            if (pos.x > _game.GetSettings()._width)
+                pos.x = 0;
+            else if (pos.x < 0)
+                pos.x = _game.GetSettings()._width;
+
+            if (pos.y > _game.GetSettings()._height)
+                pos.y = 0;
+            else if (pos.y < 0)
+                pos.y = _game.GetSettings()._height;
+            return pos;
+        }
         public override bool IsHit(Vector2 pos)
         {
             var res = false;
@@ -86,10 +100,6 @@ namespace refactorSimpleSnake
         {
             die = true;
             _game.GameOver();
-        }
-        public int GetScore()
-        {
-            return score;
         }
     }
 }

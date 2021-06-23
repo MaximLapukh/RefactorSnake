@@ -17,5 +17,6 @@ namespace refactorSimpleSnake
         public int GetCountFood();
         public List<GameObject> GetStaticObjs();
         public List<GameObject> GetDynamicObjs();
+        public GameSettings GetSettings();
     }
 }

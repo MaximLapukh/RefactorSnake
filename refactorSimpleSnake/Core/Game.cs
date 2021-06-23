@@ -133,5 +133,10 @@ namespace refactorSimpleSnake
                 countFoods--;
             }
         }
+
+        public GameSettings GetSettings()
+        {
+            return _settings;
+        }
     }
 }
