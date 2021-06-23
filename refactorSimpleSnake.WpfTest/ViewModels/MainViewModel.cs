@@ -10,22 +10,14 @@ namespace refactorSimpleSnake.WpfTest.ViewModels
 {
     public class MainViewModel
     {
-
         public static GameSettings _settings;
-
-
         public ICommand StartingGame { get {
                 return new DelegateCommand((obj) => {
-                    _settings = new GameSettings(50,50);
-                   
+                    _settings = new GameSettings(50,50);                   
                    var game = new GameWindow();
-                   if (game.ShowDialog() == true)
-                    {
-
-                    }
+                   if (game.ShowDialog() == true){}
                 });                    
             } 
-        }
-     
+        }     
     }
 }
