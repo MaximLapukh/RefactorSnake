@@ -35,6 +35,19 @@ namespace refactorSimpleSnake.WpfTest.ViewModels
             DependencyProperty.Register("Height", typeof(int), typeof(GameViewModel), new PropertyMetadata(0));
         private Canvas dynSpace;
         private Snake snake;
+
+
+        public int Score
+        {
+            get { return (int)GetValue(ScoreProperty); }
+            set { SetValue(ScoreProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Score.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ScoreProperty =
+            DependencyProperty.Register("Score", typeof(int), typeof(GameViewModel), new PropertyMetadata(0));
+
+
         public ICommand InputUp => new DelegateCommand((o) =>
         {
             snake.direction = Direction.down;
@@ -92,10 +105,12 @@ namespace refactorSimpleSnake.WpfTest.ViewModels
         }
         private void ChangedView(object sender, EventArgs e)
         {
+            
             var game = sender as Game;
             var list = game.GetDynamicObjs();
             Action action = new Action(() =>
             {
+                Score = snake.score;
                 dynSpace.Children.Clear();
                 foreach (var gObj in list)
                 {

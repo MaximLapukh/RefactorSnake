@@ -14,7 +14,17 @@
         <KeyBinding Key="Left" Command="{Binding InputLeft}"/>
     </Window.InputBindings>
     <Grid>
-        <Canvas x:Name="Background" Background="Black" Width="{Binding WidthWindow}" Height="{Binding HeightWindow}"/>
-        <Canvas x:Name="DynSpace" Width="{Binding WidthWindow}" Height="{Binding HeightWindow}"/>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <Canvas x:Name="Background" Background="Black" Width="{Binding WidthWindow}" Height="{Binding HeightWindow}"/>
+            <Canvas x:Name="DynSpace" Width="{Binding WidthWindow}" Height="{Binding HeightWindow}"/>
+        </Grid>
+        <StackPanel Orientation="Horizontal" Grid.Row="2">
+            <TextBlock Text="Score: "/>
+            <TextBlock Text="{Binding Score}"/>
+        </StackPanel>
     </Grid>
 </Window>
