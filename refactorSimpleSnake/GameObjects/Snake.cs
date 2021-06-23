@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace refactorSimpleSnake
 {
-    public class Snake:GameObject
+    public class Snake : GameObject
     {
         private bool die = false;
         private Vector2 _direction;
-        private Direction _dir;//error if it not exist, when call get{}
+        private Direction _dir;
         public Direction direction
         {
             get { return _dir; }
@@ -19,11 +19,11 @@ namespace refactorSimpleSnake
                 _direction = value.GetVector2();
             }
         }
-        public int score { get; private set; }
-        private Game _game { get; }
-        private Segment _segment;
-        private int stomach = 2;
-        public Snake(Game game,int slong)
+        public int score { get; private set; } = 0;
+        private readonly IGame _game;
+        private Segment _segment { get; set; }
+        private int stomach { get; set; } = 2;
+        public Snake(IGame game,int slong = 2)
         {
             if(slong > 0)
                 stomach = slong;
@@ -46,7 +46,7 @@ namespace refactorSimpleSnake
             {
                 if(gObj != null)
                 {
-                    if (gObj is Wall||gObj is Snake)
+                    if (gObj is Wall || gObj is Snake)
                     {
                         _game.GameOver();
                         Die();
@@ -82,14 +82,14 @@ namespace refactorSimpleSnake
             if (position == pos) res = true;
             return res;
         }
-        public virtual void Die()
+        public void Die()
         {
             die = true;
             _game.GameOver();
         }
         public int GetScore()
         {
-            return 0;
+            return score;
         }
     }
 }

@@ -57,7 +57,7 @@ namespace refactorSimpleSnake.WpfTest.ViewModels
             WidthWindow = MainViewModel._settings._width * CellSize;
             dynSpace = window.DynSpace;
 
-            Game game = new Game(MainViewModel._settings, new FactoryWallsAround(), new EatToCreate());
+            IGame game = new Game(MainViewModel._settings, new FactoryWallsAround(), new EatToCreate());
             game.Update += ChangedView;
             foreach (var wall in InitWalls(game.GetStaticObjs()))
             {
