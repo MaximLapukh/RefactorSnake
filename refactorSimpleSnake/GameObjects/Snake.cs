@@ -15,8 +15,10 @@ namespace refactorSimpleSnake
         {
             get { return _dir; }
             set {
-                _dir = value;
-                _direction = value.GetVector2();
+                if ((_dir.GetVector2() + value.GetVector2()) != Vector2.Zero) {
+                    _dir = value;
+                    _direction = value.GetVector2();
+                }
             }
         }
         public int score { get; private set; } = 0;

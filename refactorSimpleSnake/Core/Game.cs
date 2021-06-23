@@ -28,7 +28,6 @@ namespace refactorSimpleSnake
             else _factoryFood = new NoneFactoryFood();
             if (factoryWalls != null)
                 staticGameObjs = factoryWalls.InitWalls(_settings);
-
         }
 
         public Snake AddSnake(Vector2 start, int slong, Direction dir)
@@ -91,9 +90,9 @@ namespace refactorSimpleSnake
                 while (true)
                 {
                     if (IsGameOver) return;
-                    foreach (var obj in dynamicGameObjs)
+                    foreach (var gObj in dynamicGameObjs)
                     {
-                        obj.MoveTo(obj.position);
+                        gObj.MoveTo(gObj.position);
                     }
                     destroyRemObjs();
                     var nfoods = _factoryFood.CreateFood(this, _settings);
@@ -107,8 +106,6 @@ namespace refactorSimpleSnake
                     Task.Delay(_settings._speed).Wait();
                 }               
             });
-            
-
         }
         private void reset() {
             dynamicGameObjs = new List<GameObject>();
@@ -127,7 +124,7 @@ namespace refactorSimpleSnake
         }
         public void EatFood(object sender,Food food)
         {
-            if(sender is Snake && food != null)
+            if(sender is Snake && food != null && dynamicGameObjs.Contains(food))
             {
                 remGameObjs.Add(food);
                 countFoods--;
