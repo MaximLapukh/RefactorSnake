@@ -10,11 +10,12 @@ namespace refactorSimpleSnake
     {
         public readonly int _width;
         public readonly int _height;
-        
-        public GameSettings(int width, int height)
+        public readonly int _speed;
+        public GameSettings(int width, int height,int speed)
         {
             _width = width;
             _height = height;
+            _speed = speed;
         }
     }
 }

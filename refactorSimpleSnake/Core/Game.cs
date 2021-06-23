@@ -104,7 +104,7 @@ namespace refactorSimpleSnake
                     }
                     
                     Update?.Invoke(this, null);
-                    Task.Delay(100).Wait();
+                    Task.Delay(_settings._speed).Wait();
                 }               
             });
             
