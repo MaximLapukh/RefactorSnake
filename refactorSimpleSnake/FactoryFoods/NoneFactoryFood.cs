@@ -8,9 +8,9 @@ namespace refactorSimpleSnake.FactoryFoods
 {
     public class NoneFactoryFood : IFactoryFood
     {
-        public List<Food> CreateFood(IGame game, GameSettings settings)
+        public List<Food> CreateFood(IGame game)
         {
-            return null;
+            return new();
         }
     }
 }

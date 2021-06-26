@@ -8,10 +8,11 @@ namespace refactorSimpleSnake
 {
     public interface IGame
     {
-        public event EventHandler Update;
+        public bool isStop { get; set; }
+        public event EventHandler<GameEventArgs> Update;
+        public event EventHandler Stop;
         public bool TryGetGamObj(Vector2 vec, out GameObject gameObject);
         public void Start();
-        public void GameOver();
         public Snake AddSnake(Vector2 start,int slong,Direction dir);
         public void EatFood(object sender,Food food);
         public int GetCountFood();

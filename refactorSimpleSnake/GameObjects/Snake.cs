@@ -8,8 +8,9 @@ namespace refactorSimpleSnake
 {
     public class Snake : GameObject
     {
-        private bool die = false;
-        private Vector2 _direction;
+        public bool die { get; private set; } = false;
+        public event EventHandler Death;
+        private Vector2 _direction = new();
         private Direction _dir;
         public Direction direction
         {
@@ -28,8 +29,7 @@ namespace refactorSimpleSnake
         public Snake(IGame game,int slong = 2)
         {
             if(slong > 0)
-                stomach = slong;
-            _direction = new Vector2();
+                stomach = slong;            
             direction = Direction.right;
             _game = game;
         }
@@ -50,9 +50,7 @@ namespace refactorSimpleSnake
             {
                 if(gObj != null)
                 {
-                    if (gObj is Wall || gObj is Snake)
-                    {
-                        _game.GameOver();
+                    if (gObj is Wall || gObj is Snake) { 
                         Die();
                     }
                     var food = gObj as Food;
@@ -101,7 +99,8 @@ namespace refactorSimpleSnake
         public void Die()
         {
             die = true;
-            _game.GameOver();
+            Death?.Invoke(this, null);
+            _game.isStop = true;
         }
     }
 }

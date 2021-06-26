@@ -8,7 +8,7 @@ namespace refactorSimpleSnake.FactoryFoods
 {
     public interface IFactoryFood
     {
-        public List<Food> CreateFood(IGame game, GameSettings settings);
+        public List<Food> CreateFood(IGame game);
       
     }
     public static class Rnd

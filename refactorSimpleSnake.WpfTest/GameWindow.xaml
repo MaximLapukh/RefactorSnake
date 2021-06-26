@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:refactorSimpleSnake.WpfTest" xmlns:vm="clr-namespace:refactorSimpleSnake.WpfTest.ViewModels"
         mc:Ignorable="d"
-        Title="GameWindow" SizeToContent="WidthAndHeight" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
-
+        Title="GameWindow" SizeToContent="WidthAndHeight" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" >
     <Window.InputBindings>
         <KeyBinding Key="Up" Command="{Binding InputUp}"/>
         <KeyBinding Key="Down" Command="{Binding InputDown}"/>
         <KeyBinding Key="Right" Command="{Binding InputRight}"/>
         <KeyBinding Key="Left" Command="{Binding InputLeft}"/>
+        <KeyBinding Key="Space" Command="{Binding StopAndContinue}"/>
     </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
@@ -21,6 +21,7 @@
         <Grid>
             <Canvas x:Name="Background" Background="Black" Width="{Binding WidthWindow}" Height="{Binding HeightWindow}"/>
             <Canvas x:Name="DynSpace" Width="{Binding WidthWindow}" Height="{Binding HeightWindow}"/>
+            
         </Grid>
         <StackPanel Orientation="Horizontal" Grid.Row="2">
             <TextBlock Text="Score: "/>

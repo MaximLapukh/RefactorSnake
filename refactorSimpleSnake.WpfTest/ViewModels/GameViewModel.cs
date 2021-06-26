@@ -33,20 +33,17 @@ namespace refactorSimpleSnake.WpfTest.ViewModels
         }
         public static readonly DependencyProperty HeightProperty =
             DependencyProperty.Register("Height", typeof(int), typeof(GameViewModel), new PropertyMetadata(0));
-        private Canvas dynSpace;
-        private Snake snake;
-
-
         public int Score
         {
             get { return (int)GetValue(ScoreProperty); }
             set { SetValue(ScoreProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Score.  This enables animation, styling, binding, etc...
+        }       
         public static readonly DependencyProperty ScoreProperty =
             DependencyProperty.Register("Score", typeof(int), typeof(GameViewModel), new PropertyMetadata(0));
 
+        private Canvas space;
+        private Snake snake;
+        private IGame game;
 
         public ICommand InputUp => new DelegateCommand((o) =>
         {
@@ -64,29 +61,31 @@ namespace refactorSimpleSnake.WpfTest.ViewModels
         {
             snake.direction = Direction.left;
         });
+        public ICommand StopAndContinue => new DelegateCommand((obj) =>
+        {
+            game.isStop = !game.isStop;
+        });
         public GameViewModel(GameWindow window)
         {
             HeightWindow = MainViewModel._settings._height * CellSize;
             WidthWindow = MainViewModel._settings._width * CellSize;
-            dynSpace = window.DynSpace;
+            space = window.DynSpace;
 
-            IGame game = new Game(MainViewModel._settings, new FactoryWallsAround(), new EatToCreate());
+            game = new Game(MainViewModel._settings, new FactoryWallsAround(),new EatToCreate());
             game.Update += ChangedView;
-            foreach (var wall in InitWalls(game.GetStaticObjs()))
+            game.Stop += GameOver;
+            game.Start();
+
+            foreach (var wall in game.GetStaticObjs())
             {
-                window.Background.Children.Add(wall);
+                window.Background.Children.Add(CreateViewObj(wall));
             }
-           game.Start();
-           snake =  game.AddSnake(new Vector2(1, 9), 3, Direction.up);
+            snake =  game.AddSnake(new Vector2(1, 9), 3, Direction.up);
         }
-        private IEnumerable<Rectangle> InitWalls(List<GameObject> walls)
+        private void GameOver(object sender, EventArgs e)
         {
-            foreach (var wall in walls)
-            {
-                var viewWall = CreateViewObj(wall);
-                viewWall.Fill = Brushes.White;
-                yield return viewWall;
-            }
+            if (!snake.die) return;
+            MessageBox.Show($"Score: {snake.score}","Game Over",MessageBoxButton.OK,MessageBoxImage.Information);
         }
         private Rectangle CreateViewObj(GameObject gObj)
         {
@@ -94,45 +93,41 @@ namespace refactorSimpleSnake.WpfTest.ViewModels
             {
                 Width = CellSize,
                 Height = CellSize,
-                Fill = Brushes.White,
                 Stroke = Brushes.Black,
                 StrokeThickness = 1
             };
-
+            viewObj.Fill = GetColorType(gObj.GetType());
             Canvas.SetLeft(viewObj, gObj.position.x * CellSize);
             Canvas.SetTop(viewObj, gObj.position.y * CellSize);
             return viewObj;
         }
-        private void ChangedView(object sender, EventArgs e)
-        {
-            
-            var game = sender as Game;
-            var list = game.GetDynamicObjs();
+        private void ChangedView(object sender, GameEventArgs e)
+        {            
             Action action = new Action(() =>
             {
                 Score = snake.score;
-                dynSpace.Children.Clear();
-                foreach (var gObj in list)
+                space.Children.Clear();
+                foreach (var gObj in e.dynObjs)
                 {
-                    var children = gObj.ToList();
-                    foreach (var child in children)
-                    {
-                        var viewgObj = CreateViewObj(child);
-                        Type type = child.GetType();
-                        //switch
-                        if (type == typeof(Food))                        
-                            viewgObj.Fill = Brushes.GreenYellow;                        
-                        else if (type == typeof(Snake))
-                            viewgObj.Fill = Brushes.Red;
-                        else if (type == typeof(Segment))
-                            viewgObj.Fill = Brushes.Orange;
-
-                        dynSpace.Children.Add(viewgObj);
+                    foreach (var child in gObj.ToList())
+                    {       
+                        space.Children.Add(CreateViewObj(child));
                     }
                 }
             });
             if (!Dispatcher.CheckAccess()) Dispatcher.Invoke(action);
             else action();
+        }
+        private Brush GetColorType(Type type)
+        {
+            return type switch
+            {
+                { Name: "Food" } => Brushes.GreenYellow,
+                { Name: "Snake" } => Brushes.Red,
+                { Name: "Segment" } => Brushes.Orange,
+                { Name: "Wall" } => Brushes.White,
+                _ => Brushes.Purple
+            };
         }
     }
 }

@@ -10,38 +10,45 @@ namespace refactorSimpleSnake
 {
     public sealed class Game:IGame
     {
-        private bool IsGameOver { get; set; } = false;
-        private readonly Dictionary<int, GameObject> staticGameObjs = new Dictionary<int, GameObject>();
-        private List<GameObject> dynamicGameObjs = new List<GameObject>();
-        private List<GameObject> remGameObjs = new List<GameObject>();
-        private readonly GameSettings _settings;
-        private readonly IFactoryFood _factoryFood;
-        private int countFoods=0;
+        private bool _isStop = false;
 
-        public event EventHandler Update;
-
-        public Game(GameSettings settings,BaseFactoryWalls factoryWalls = null,IFactoryFood factoryFood = null)
-        {            
-            _settings = settings;
-            if (factoryFood != null)
-                _factoryFood = factoryFood;
-            else _factoryFood = new NoneFactoryFood();
-            if (factoryWalls != null)
-                staticGameObjs = factoryWalls.InitWalls(_settings);
+        public bool isStop
+        {
+            get { return _isStop; }
+            set { _isStop = value; if (_isStop) Stop(this,null); }
         }
 
+        private readonly Dictionary<int, GameObject> static_gObjs = new();
+        private List<GameObject> dyn_gObjs = new();
+        private List<GameObject> rem_gObjs = new();
+        private readonly GameSettings _settings;
+
+        private IFactoryFood factoryFood = new NoneFactoryFood();
+
+        public IFactoryFood FactoryFood
+        {
+            get { return factoryFood; }
+            set { if(value != null) factoryFood = value; }
+        }
+        private int countFoods = 0;
+
+        public event EventHandler<GameEventArgs> Update;
+        public event EventHandler Stop;
+
+        public Game(GameSettings settings,BaseFactoryWalls factoryWalls = null,IFactoryFood factoryFood = null)
+        {
+            _settings = settings;
+            FactoryFood = factoryFood;           
+            static_gObjs = factoryWalls.InitWalls(_settings) ?? new();
+        }
+        //GetEmptySpace
         public Snake AddSnake(Vector2 start, int slong, Direction dir)
         {
             var snake = new Snake(this,slong);
             snake.direction = dir;
             snake.position = start;
-            dynamicGameObjs.Add(snake);
+            dyn_gObjs.Add(snake);
             return snake;
-        }
-
-        public void GameOver()
-        {
-            IsGameOver = true;
         }
 
         public int GetCountFood()
@@ -51,20 +58,19 @@ namespace refactorSimpleSnake
 
         public List<GameObject> GetDynamicObjs()
         {
-            return dynamicGameObjs;
+            return dyn_gObjs;
         }
 
         public bool TryGetGamObj(Vector2 vec, out GameObject gameObject)
         {
-            var hash = vec.GetHashCode();
-            if (staticGameObjs.TryGetValue(vec.GetHashCode(), out GameObject gObj))
+            if (static_gObjs.TryGetValue(vec.GetHashCode(), out GameObject gObj))
             {
                 gameObject = gObj;
                 return true;
             }
-            if (dynamicGameObjs.Count > 0)
+            if (dyn_gObjs.Count > 0)
             {
-                foreach (var obj in dynamicGameObjs)
+                foreach (var obj in dyn_gObjs)
                 {
                     if (obj.IsHit(vec))
                     {
@@ -80,7 +86,7 @@ namespace refactorSimpleSnake
 
         public List<GameObject> GetStaticObjs()
         {
-            return staticGameObjs.Values.ToList();
+            return static_gObjs.Values.ToList();
         }
 
         public void Start()
@@ -89,44 +95,47 @@ namespace refactorSimpleSnake
             Task.Factory.StartNew(() => {
                 while (true)
                 {
-                    if (IsGameOver) return;
-                    foreach (var gObj in dynamicGameObjs)
+                    if (!isStop)
                     {
-                        gObj.MoveTo(gObj.position);
+                        foreach (var gObj in dyn_gObjs)
+                        {
+                            gObj.MoveTo(gObj.position);
+                        }
+                        destroyRemObjs();
+
+                        var nfoods = FactoryFood.CreateFood(this);
+                        if (nfoods != null)
+                        {
+                            dyn_gObjs.AddRange(nfoods);
+                            countFoods += nfoods.Count;
+                        }
+
+                        Update?.Invoke(this, new GameEventArgs(dyn_gObjs));
+                        Task.Delay(_settings._speed).Wait();
                     }
-                    destroyRemObjs();
-                    var nfoods = _factoryFood.CreateFood(this, _settings);
-                    if (nfoods != null && nfoods.Count > 0)
-                    {
-                        dynamicGameObjs.AddRange(nfoods);
-                        countFoods += nfoods.Count;
-                    }
-                    
-                    Update?.Invoke(this, null);
-                    Task.Delay(_settings._speed).Wait();
                 }               
             });
         }
         private void reset() {
-            dynamicGameObjs = new List<GameObject>();
+            dyn_gObjs = new ();
             countFoods = 0;
-            IsGameOver = false;
+            isStop = false;
         }
         private void destroyRemObjs()
         {
-            if(remGameObjs.Count > 0)
+            if(rem_gObjs.Count > 0)
             {
-                foreach (var obj in remGameObjs)
+                foreach (var obj in rem_gObjs)
                 {
-                    dynamicGameObjs.Remove(obj);
+                    dyn_gObjs.Remove(obj);
                 }
             }
         }
         public void EatFood(object sender,Food food)
         {
-            if(sender is Snake && food != null && dynamicGameObjs.Contains(food))
+            if(sender is Snake && food != null && dyn_gObjs.Contains(food))
             {
-                remGameObjs.Add(food);
+                rem_gObjs.Add(food);
                 countFoods--;
             }
         }
@@ -134,6 +143,14 @@ namespace refactorSimpleSnake
         public GameSettings GetSettings()
         {
             return _settings;
+        }
+    }
+    public class GameEventArgs : EventArgs
+    {
+        public List<GameObject> dynObjs;
+        public GameEventArgs(List<GameObject> dynObjs)
+        {
+            this.dynObjs = dynObjs;
         }
     }
 }

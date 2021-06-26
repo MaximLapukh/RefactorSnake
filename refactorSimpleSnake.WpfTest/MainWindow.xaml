@@ -18,13 +18,27 @@
         <viewmodels:MainViewModel/>
     </Window.DataContext>
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <StackPanel Width="100" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBlock Style="{StaticResource Header}" Text="Snake" HorizontalAlignment="Center"/>
-            <Button Content="Play" Command="{Binding StartingGame}"/>
-            <Button Content="Exit" Click="Exit_Click"/>
-        </StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height=" auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <StackPanel Margin="15 15 0 0">
+                <TextBlock Text="UserName:"/>
+                <TextBox Text="{Binding Username}" MinWidth="100"/>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="1">
+            <StackPanel Width="100" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Style="{StaticResource Header}" Text="Snake" HorizontalAlignment="Center"/>
+                <Button Content="Play" Command="{Binding StartingGame}"/>
+                <Button Content="Records" Command="{Binding ShowRecordsMenu}"/>
+                <Button Content="Exit" Click="Exit_Click"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>
